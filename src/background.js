@@ -22,17 +22,29 @@ const BATCH_SIZE = 10;
 // Tab Activity Tracking
 // =============================================================================
 
-const tabLastActive = new Map();
+// In-memory cache — restored from storage on service worker wake-up
+let tabLastActive = new Map();
+
+const STORAGE_KEY_TAB_TIMESTAMPS = 'tabLastActiveTimestamps';
 
 chrome.runtime.onInstalled.addListener(seedTabTimestamps);
 chrome.runtime.onStartup.addListener(seedTabTimestamps);
 
 async function seedTabTimestamps() {
+  // Restore persisted timestamps so SW restarts don't reset idle clocks
+  const { [STORAGE_KEY_TAB_TIMESTAMPS]: saved = {} } =
+    await chrome.storage.local.get(STORAGE_KEY_TAB_TIMESTAMPS);
+  const savedMap = new Map(Object.entries(saved).map(([k, v]) => [Number(k), v]));
+
   const tabs = await chrome.tabs.query({});
   const now = Date.now();
   for (const tab of tabs) {
-    tabLastActive.set(tab.id, now);
+    // Keep persisted timestamp if it exists; otherwise start fresh
+    tabLastActive.set(tab.id, savedMap.get(tab.id) || now);
   }
+
+  // Persist back (cleans up closed tab entries)
+  await persistTimestamps();
 
   await chrome.alarms.create(CHECK_ALARM_NAME, {
     periodInMinutes: CHECK_INTERVAL_MINUTES,
@@ -42,18 +54,34 @@ async function seedTabTimestamps() {
   });
 }
 
+// Ensure in-memory map is populated even on alarm-wake (no onInstalled/onStartup)
+async function ensureTimestampsLoaded() {
+  if (tabLastActive.size > 0) return;
+  const { [STORAGE_KEY_TAB_TIMESTAMPS]: saved = {} } =
+    await chrome.storage.local.get(STORAGE_KEY_TAB_TIMESTAMPS);
+  tabLastActive = new Map(Object.entries(saved).map(([k, v]) => [Number(k), v]));
+}
+
+async function persistTimestamps() {
+  const obj = Object.fromEntries(tabLastActive);
+  await chrome.storage.local.set({ [STORAGE_KEY_TAB_TIMESTAMPS]: obj });
+}
+
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   tabLastActive.set(tabId, Date.now());
+  persistTimestamps();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.url || changeInfo.status === 'complete') {
     tabLastActive.set(tabId, Date.now());
+    persistTimestamps();
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabLastActive.delete(tabId);
+  persistTimestamps();
 });
 
 // =============================================================================
@@ -61,6 +89,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 // =============================================================================
 
 async function getIdleTabs() {
+  await ensureTimestampsLoaded();
   const now = Date.now();
   const allTabs = await chrome.tabs.query({});
   const whitelist = await getWhitelist();
@@ -86,6 +115,7 @@ async function getIdleTabs() {
 
 // Also return "warned" tabs (idle > 50% of threshold) for countdown display
 async function getAllTabsWithStatus() {
+  await ensureTimestampsLoaded();
   const now = Date.now();
   const allTabs = await chrome.tabs.query({});
   const whitelist = await getWhitelist();
@@ -207,6 +237,7 @@ async function processIdleBookmarks() {
 // =============================================================================
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
+  await ensureTimestampsLoaded();
   if (alarm.name === CHECK_ALARM_NAME) {
     const { autoArchive } = await chrome.storage.local.get({ autoArchive: false });
     if (!autoArchive) return;
@@ -251,6 +282,7 @@ async function processIdleTabs() {
     const tabIds = idleTabs.map((t) => t.id);
     await chrome.tabs.remove(tabIds);
     tabIds.forEach((id) => tabLastActive.delete(id));
+    await persistTimestamps();
     await updateBadge();
   } catch (err) {
     console.error('[F&F] Tab archiving failed:', err);

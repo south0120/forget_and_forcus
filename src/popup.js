@@ -4,6 +4,7 @@
 
 import { getArchives, exportToMarkdown, downloadMarkdown } from './storage.js';
 import { getLocale, t, applyI18n, getRandomQuote } from './i18n.js';
+import { isPro } from './tier.js';
 
 let locale = 'ja';
 
@@ -114,8 +115,8 @@ async function loadArchives() {
 // =============================================================================
 
 async function loadTierUI() {
-  const response = await chrome.runtime.sendMessage({ type: 'GET_TIER' });
-  const pro = response?.isPro || false;
+  // Check tier directly — avoids flaky message channel to service worker
+  const pro = await isPro();
 
   if (pro) {
     proBanner.classList.add('hidden');
