@@ -158,3 +158,46 @@ body {
   color: var(--text-secondary);
   font-size: 12px;
 }
+
+/* Plan indicator */
+.plan-indicator {
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.header + .plan-indicator {
+  display: block;
+  margin: -8px auto 12px auto;
+}
+
+.plan-free {
+  background: var(--border);
+  color: var(--text-secondary);
+}
+
+.plan-pro {
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: #fff;
+}
+
+/* Pro banner */
+.pro-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: #92400E;
+}

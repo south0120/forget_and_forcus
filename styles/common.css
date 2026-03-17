@@ -125,3 +125,31 @@ select:focus {
 .mt-16 { margin-top: 16px; }
 .mb-8 { margin-bottom: 8px; }
 .mb-12 { margin-bottom: 12px; }
+
+.hidden { display: none !important; }
+
+/* Pro badge */
+.badge-pro {
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+.badge-pro-sm {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: #fff;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Source icon */
+.source-icon {
+  font-size: 12px;
+  margin-right: 2px;
+}
