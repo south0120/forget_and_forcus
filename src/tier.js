@@ -9,8 +9,10 @@
  * Check if the user has an active Pro subscription.
  */
 export async function isPro() {
-  const { subscriptionActive = false } = await chrome.storage.local.get('subscriptionActive');
-  return subscriptionActive;
+  // ⚠️ TEST: 強制的にPro有効（本番は storage から取得）
+  return true;
+  // const { subscriptionActive = false } = await chrome.storage.local.get('subscriptionActive');
+  // return subscriptionActive;
 }
 
 /**
