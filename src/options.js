@@ -57,7 +57,8 @@ async function loadSettings() {
   const manifesto = document.getElementById('manifesto');
   manifesto.innerHTML = t(locale, 'manifesto').replace(/\n/g, '<br>');
 
-  await updateTierUI(settings.subscriptionActive);
+  const pro = await isPro();
+  await updateTierUI(pro);
 }
 
 // =============================================================================
@@ -105,7 +106,7 @@ btnSave.addEventListener('click', async () => {
     autoArchive: autoArchive.checked,
     bookmarkArchive: bookmarkArchive.checked,
     // Fixed values — no user choice. That's the point.
-    idleThresholdMinutes: 30, // ⚠️ TEST: 30 minutes (本番は 1440)
+    idleThresholdMinutes: 5, // ⚠️ TEST: 5 minutes (本番は 1440)
     bookmarkThresholdDays: 30,  // 30 days. Deal with it.
   });
 
