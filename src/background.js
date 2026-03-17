@@ -73,7 +73,10 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (changeInfo.url || changeInfo.status === 'complete') {
+  // Only reset on actual navigation, NOT on status:'complete'
+  // Chrome fires 'complete' for background tabs (favicon, SW restart, etc.)
+  // which would perpetually reset idle timers
+  if (changeInfo.url) {
     tabLastActive.set(tabId, Date.now());
     persistTimestamps();
   }
@@ -239,8 +242,12 @@ async function processIdleBookmarks() {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   await ensureTimestampsLoaded();
   if (alarm.name === CHECK_ALARM_NAME) {
+    console.log('[F&F] ⏰ Alarm fired. Checking idle tabs...');
     const { autoArchive } = await chrome.storage.local.get({ autoArchive: false });
-    if (!autoArchive) return;
+    if (!autoArchive) {
+      console.log('[F&F] autoArchive is OFF — skipping.');
+      return;
+    }
     await processIdleTabs();
   }
 
@@ -260,6 +267,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 async function processIdleTabs() {
   const idleTabs = await getIdleTabs();
+  console.log(`[F&F] Idle tabs found: ${idleTabs.length}`, idleTabs.map((t) => t.title));
   if (idleTabs.length === 0) return;
 
   const tabData = idleTabs.map((tab) => ({
