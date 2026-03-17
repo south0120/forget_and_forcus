@@ -219,7 +219,12 @@ async function processIdleBookmarks() {
   try {
     let entry;
     if (await isPro()) {
-      entry = await summarizeAndArchiveTabs(tabData);
+      try {
+        entry = await summarizeAndArchiveTabs(tabData);
+      } catch (aiErr) {
+        console.warn('[F&F] AI archiving failed for bookmarks, falling back:', aiErr.message);
+        entry = createFreeArchiveEntry(tabData);
+      }
     } else {
       entry = createFreeArchiveEntry(tabData);
     }
@@ -280,7 +285,12 @@ async function processIdleTabs() {
   try {
     let entry;
     if (await isPro()) {
-      entry = await summarizeAndArchiveTabs(tabData);
+      try {
+        entry = await summarizeAndArchiveTabs(tabData);
+      } catch (aiErr) {
+        console.warn('[F&F] AI archiving failed, falling back to free tier:', aiErr.message);
+        entry = createFreeArchiveEntry(tabData);
+      }
     } else {
       entry = createFreeArchiveEntry(tabData);
     }
@@ -292,6 +302,7 @@ async function processIdleTabs() {
     tabIds.forEach((id) => tabLastActive.delete(id));
     await persistTimestamps();
     await updateBadge();
+    console.log(`[F&F] ✅ Archived ${tabIds.length} tabs.`);
   } catch (err) {
     console.error('[F&F] Tab archiving failed:', err);
   }
@@ -365,7 +376,12 @@ async function archiveSelectedTabs(tabIds) {
 
   let entry;
   if (await isPro()) {
-    entry = await summarizeAndArchiveTabs(tabData);
+    try {
+      entry = await summarizeAndArchiveTabs(tabData);
+    } catch (aiErr) {
+      console.warn('[F&F] AI archiving failed for selected tabs, falling back:', aiErr.message);
+      entry = createFreeArchiveEntry(tabData);
+    }
   } else {
     entry = createFreeArchiveEntry(tabData);
   }
@@ -373,5 +389,6 @@ async function archiveSelectedTabs(tabIds) {
   await saveArchivedTabs(entry);
   await chrome.tabs.remove(tabIds);
   tabIds.forEach((id) => tabLastActive.delete(id));
+  await persistTimestamps();
   await updateBadge();
 }
