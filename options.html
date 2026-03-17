@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/common.css">
+  <link rel="stylesheet" href="styles/options.css">
+  <title>Forget & Focus — 設定</title>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Forget & Focus</h1>
+      <p class="tagline">設定</p>
+    </header>
+
+    <!-- AI Provider Settings -->
+    <section class="card mb-12">
+      <h2>AI設定</h2>
+      <div class="form-group mt-8">
+        <label for="ai-provider">AIプロバイダ</label>
+        <select id="ai-provider">
+          <option value="gemini">Google Gemini</option>
+          <option value="openai">OpenAI</option>
+          <option value="claude">Anthropic Claude</option>
+        </select>
+      </div>
+      <div class="form-group mt-8">
+        <label for="ai-model">モデル（空欄でデフォルト）</label>
+        <input type="text" id="ai-model" placeholder="例: gemini-1.5-flash">
+      </div>
+      <div class="form-group mt-8">
+        <label for="api-key">APIキー（BYOK）</label>
+        <input type="password" id="api-key" placeholder="sk-... / AIza...">
+        <p class="text-secondary mt-8">キーはローカルに保存され、外部には送信されません。</p>
+      </div>
+    </section>
+
+    <!-- Auto Archive Settings -->
+    <section class="card mb-12">
+      <h2>自動アーカイブ</h2>
+      <div class="form-group mt-8">
+        <label class="toggle-label">
+          <input type="checkbox" id="auto-archive">
+          <span>放置タブの自動アーカイブを有効にする</span>
+        </label>
+        <p class="text-secondary mt-8">
+          1時間以上放置されたタブを15分おきにチェックし、自動で要約・アーカイブします。
+        </p>
+      </div>
+    </section>
+
+    <!-- Whitelist -->
+    <section class="card mb-12">
+      <h2>ホワイトリスト（忘却しないサイト）</h2>
+      <p class="text-secondary mb-8">
+        ドメイン名やURLプレフィクスを指定してください。固定タブは自動的に除外されます。
+      </p>
+      <div class="whitelist-input mt-8">
+        <input type="text" id="whitelist-input" placeholder="例: github.com">
+        <button id="btn-add-whitelist" class="btn-primary btn-sm">追加</button>
+      </div>
+      <ul id="whitelist-items" class="whitelist-list mt-8"></ul>
+    </section>
+
+    <!-- Subscription / Stripe -->
+    <section class="card mb-12">
+      <h2>サブスクリプション</h2>
+      <div id="subscription-status" class="mt-8">
+        <p class="text-secondary">Free プラン</p>
+      </div>
+      <div class="mt-12">
+        <button id="btn-subscribe" class="btn-primary">Pro版にアップグレード ($5/月)</button>
+        <p class="text-secondary mt-8">
+          Pro版では開発者提供のAPIを利用でき、自身のAPIキー不要で利用できます。
+        </p>
+      </div>
+    </section>
+
+    <!-- Data Management -->
+    <section class="card mb-12">
+      <h2>データ管理</h2>
+      <div class="button-group mt-8">
+        <button id="btn-export-all" class="btn-secondary">全データをMarkdownで出力</button>
+        <button id="btn-export-weekly" class="btn-secondary">今週のレポート出力</button>
+        <button id="btn-clear-all" class="btn-danger">全データを削除</button>
+      </div>
+    </section>
+
+    <!-- Save -->
+    <div class="save-bar">
+      <span id="save-status" class="text-secondary"></span>
+      <button id="btn-save" class="btn-primary">保存</button>
+    </div>
+  </div>
+
+  <script src="src/options.js" type="module"></script>
+</body>
+</html>

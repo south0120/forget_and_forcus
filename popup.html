@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles/common.css">
+  <link rel="stylesheet" href="styles/popup.css">
+  <title>Forget & Focus</title>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <h1>Forget & Focus</h1>
+    <p class="tagline">Forget Tabs, Focus on Tasks.</p>
+  </header>
+
+  <!-- Idle tabs section -->
+  <section class="section">
+    <div class="section-header">
+      <h2>放置中のタブ</h2>
+      <button id="btn-refresh" class="btn-secondary btn-sm">更新</button>
+    </div>
+    <div id="idle-tabs-list" class="tab-list">
+      <p class="text-secondary">読み込み中...</p>
+    </div>
+  </section>
+
+  <!-- Actions -->
+  <section class="actions">
+    <button id="btn-archive-selected" class="btn-primary" disabled>
+      選択したタブを忘却する
+    </button>
+    <button id="btn-archive-all" class="btn-secondary">
+      すべて忘却する
+    </button>
+  </section>
+
+  <!-- Recent archives -->
+  <section class="section">
+    <div class="section-header">
+      <h2>最近の忘却録</h2>
+      <button id="btn-export" class="btn-secondary btn-sm">MD出力</button>
+    </div>
+    <div id="archives-list" class="archive-list">
+      <p class="text-secondary">アーカイブはまだありません</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="options.html" id="link-options">設定</a>
+  </footer>
+
+  <script src="src/popup.js" type="module"></script>
+</body>
+</html>
