@@ -4,16 +4,19 @@ import { saveArchivedTabs } from './storage.js';
 import { isPro, createFreeArchiveEntry } from './tier.js';
 
 // =============================================================================
-// Constants & Defaults
+// The Rules — Non-negotiable
 // =============================================================================
+// 24 hours. That's all you get.
+// No settings. No mercy. No "just 5 more minutes."
+// =============================================================================
+
+const IDLE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours. Period.
+const BOOKMARK_THRESHOLD_MS = 30 * 24 * 60 * 60 * 1000; // 30 days.
 const CHECK_ALARM_NAME = 'check-idle-tabs';
 const BOOKMARK_ALARM_NAME = 'check-idle-bookmarks';
 const CHECK_INTERVAL_MINUTES = 15;
 const BOOKMARK_CHECK_INTERVAL_MINUTES = 60;
 const BATCH_SIZE = 10;
-
-const DEFAULT_IDLE_THRESHOLD_MINUTES = 60;
-const DEFAULT_BOOKMARK_THRESHOLD_DAYS = 30;
 
 // =============================================================================
 // Tab Activity Tracking
@@ -54,22 +57,11 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 // =============================================================================
-// Settings Helpers
-// =============================================================================
-
-async function getIdleThresholdMs() {
-  const { idleThresholdMinutes = DEFAULT_IDLE_THRESHOLD_MINUTES } =
-    await chrome.storage.local.get('idleThresholdMinutes');
-  return idleThresholdMinutes * 60 * 1000;
-}
-
-// =============================================================================
-// Idle Tab Detection
+// Idle Tab Detection — The Judge
 // =============================================================================
 
 async function getIdleTabs() {
   const now = Date.now();
-  const idleThresholdMs = await getIdleThresholdMs();
   const allTabs = await chrome.tabs.query({});
   const whitelist = await getWhitelist();
 
@@ -80,7 +72,7 @@ async function getIdleTabs() {
     if (isWhitelistedUrl(tab.url, whitelist)) return false;
 
     const lastActive = tabLastActive.get(tab.id) || 0;
-    return now - lastActive >= idleThresholdMs;
+    return now - lastActive >= IDLE_THRESHOLD_MS;
   });
 
   idleTabs.sort((a, b) => {
@@ -92,21 +84,49 @@ async function getIdleTabs() {
   return idleTabs.slice(0, BATCH_SIZE);
 }
 
+// Also return "warned" tabs (idle > 50% of threshold) for countdown display
+async function getAllTabsWithStatus() {
+  const now = Date.now();
+  const allTabs = await chrome.tabs.query({});
+  const whitelist = await getWhitelist();
+
+  const warnThreshold = IDLE_THRESHOLD_MS * 0.5; // Warn at 12 hours
+
+  const result = [];
+  for (const tab of allTabs) {
+    if (tab.pinned || tab.active) continue;
+    if (!tab.url || !tab.url.startsWith('http')) continue;
+    if (isWhitelistedUrl(tab.url, whitelist)) continue;
+
+    const lastActive = tabLastActive.get(tab.id) || now;
+    const idleMs = now - lastActive;
+
+    if (idleMs >= warnThreshold) {
+      result.push({
+        id: tab.id,
+        title: tab.title || '(No Title)',
+        url: tab.url,
+        idleMinutes: Math.round(idleMs / 60000),
+        isDoomed: idleMs >= IDLE_THRESHOLD_MS,
+      });
+    }
+  }
+
+  // Most doomed first
+  result.sort((a, b) => b.idleMinutes - a.idleMinutes);
+  return result;
+}
+
 // =============================================================================
 // Bookmark Archiving
 // =============================================================================
 
 async function getIdleBookmarks() {
-  const { bookmarkArchive = false, bookmarkThresholdDays = DEFAULT_BOOKMARK_THRESHOLD_DAYS } =
-    await chrome.storage.local.get(['bookmarkArchive', 'bookmarkThresholdDays']);
-
+  const { bookmarkArchive = false } = await chrome.storage.local.get('bookmarkArchive');
   if (!bookmarkArchive) return [];
 
   const whitelist = await getWhitelist();
-  const thresholdMs = bookmarkThresholdDays * 24 * 60 * 60 * 1000;
   const now = Date.now();
-
-  // Get bookmark access timestamps from storage
   const { bookmarkAccess = {} } = await chrome.storage.local.get('bookmarkAccess');
 
   const tree = await chrome.bookmarks.getTree();
@@ -115,9 +135,8 @@ async function getIdleBookmarks() {
   const idle = bookmarks.filter((bm) => {
     if (!bm.url || !bm.url.startsWith('http')) return false;
     if (isWhitelistedUrl(bm.url, whitelist)) return false;
-
     const lastAccess = bookmarkAccess[bm.id] || (bm.dateAdded || 0);
-    return now - lastAccess >= thresholdMs;
+    return now - lastAccess >= BOOKMARK_THRESHOLD_MS;
   });
 
   return idle.slice(0, BATCH_SIZE);
@@ -132,47 +151,9 @@ function flattenBookmarks(nodes) {
   return result;
 }
 
-async function processIdleBookmarks() {
-  const bookmarks = await getIdleBookmarks();
-  if (bookmarks.length === 0) return;
-
-  const tabData = bookmarks.map((bm) => ({
-    id: bm.id,
-    title: bm.title || '(No Title)',
-    url: bm.url,
-    lastActive: bm.dateAdded || Date.now(),
-    source: 'bookmark',
-  }));
-
-  try {
-    let archiveEntry;
-    if (await isPro()) {
-      archiveEntry = await summarizeAndArchiveTabs(tabData);
-    } else {
-      archiveEntry = createFreeArchiveEntry(tabData);
-    }
-    archiveEntry.source = 'bookmark';
-    await saveArchivedTabs(archiveEntry);
-
-    // Remove archived bookmarks
-    for (const bm of bookmarks) {
-      try {
-        await chrome.bookmarks.remove(bm.id);
-      } catch {
-        // bookmark may already be removed
-      }
-    }
-
-    await updateBadge();
-  } catch (err) {
-    console.error('[F&F] Failed to process idle bookmarks:', err);
-  }
-}
-
-// Track bookmark access when a tab navigates to a bookmarked URL
+// Track bookmark access
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status !== 'complete' || !tab.url) return;
-
   const { bookmarkArchive = false } = await chrome.storage.local.get('bookmarkArchive');
   if (!bookmarkArchive) return;
 
@@ -186,12 +167,43 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await chrome.storage.local.set({ bookmarkAccess });
     }
   } catch {
-    // ignore errors
+    // ignore
   }
 });
 
+async function processIdleBookmarks() {
+  const bookmarks = await getIdleBookmarks();
+  if (bookmarks.length === 0) return;
+
+  const tabData = bookmarks.map((bm) => ({
+    id: bm.id,
+    title: bm.title || '(No Title)',
+    url: bm.url,
+    lastActive: bm.dateAdded || Date.now(),
+    source: 'bookmark',
+  }));
+
+  try {
+    let entry;
+    if (await isPro()) {
+      entry = await summarizeAndArchiveTabs(tabData);
+    } else {
+      entry = createFreeArchiveEntry(tabData);
+    }
+    entry.source = 'bookmark';
+    await saveArchivedTabs(entry);
+
+    for (const bm of bookmarks) {
+      try { await chrome.bookmarks.remove(bm.id); } catch { /* gone already */ }
+    }
+    await updateBadge();
+  } catch (err) {
+    console.error('[F&F] Bookmark archiving failed:', err);
+  }
+}
+
 // =============================================================================
-// Alarm Handler
+// Alarm — The Executioner
 // =============================================================================
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
@@ -212,7 +224,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 // =============================================================================
-// Core Processing — Tier-aware
+// Core — Tier-aware Processing
 // =============================================================================
 
 async function processIdleTabs() {
@@ -227,22 +239,21 @@ async function processIdleTabs() {
   }));
 
   try {
-    let archiveEntry;
+    let entry;
     if (await isPro()) {
-      archiveEntry = await summarizeAndArchiveTabs(tabData);
+      entry = await summarizeAndArchiveTabs(tabData);
     } else {
-      archiveEntry = createFreeArchiveEntry(tabData);
+      entry = createFreeArchiveEntry(tabData);
     }
-    archiveEntry.source = 'tab';
-    await saveArchivedTabs(archiveEntry);
+    entry.source = 'tab';
+    await saveArchivedTabs(entry);
 
     const tabIds = idleTabs.map((t) => t.id);
     await chrome.tabs.remove(tabIds);
     tabIds.forEach((id) => tabLastActive.delete(id));
-
     await updateBadge();
   } catch (err) {
-    console.error('[F&F] Failed to process idle tabs:', err);
+    console.error('[F&F] Tab archiving failed:', err);
   }
 }
 
@@ -255,7 +266,7 @@ async function updateBadge() {
   const totalCount = archives.reduce((sum, a) => sum + a.tabs.length, 0);
   const text = totalCount > 0 ? String(totalCount) : '';
   await chrome.action.setBadgeText({ text });
-  await chrome.action.setBadgeBackgroundColor({ color: '#6C63FF' });
+  await chrome.action.setBadgeBackgroundColor({ color: '#DC2626' }); // Red. Urgent.
 }
 
 // =============================================================================
@@ -264,30 +275,7 @@ async function updateBadge() {
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'GET_IDLE_TABS') {
-    getIdleTabs().then((tabs) => {
-      const tabData = tabs.map((tab) => ({
-        id: tab.id,
-        title: tab.title || '(No Title)',
-        url: tab.url,
-        idleMinutes: Math.round(
-          (Date.now() - (tabLastActive.get(tab.id) || Date.now())) / 60000
-        ),
-      }));
-      sendResponse({ tabs: tabData });
-    });
-    return true;
-  }
-
-  if (message.type === 'GET_IDLE_BOOKMARKS') {
-    getIdleBookmarks().then((bookmarks) => {
-      const data = bookmarks.map((bm) => ({
-        id: bm.id,
-        title: bm.title || '(No Title)',
-        url: bm.url,
-        source: 'bookmark',
-      }));
-      sendResponse({ bookmarks: data });
-    });
+    getAllTabsWithStatus().then((tabs) => sendResponse({ tabs }));
     return true;
   }
 
@@ -326,7 +314,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 async function archiveSelectedTabs(tabIds) {
   const allTabs = await chrome.tabs.query({});
   const targetTabs = allTabs.filter((t) => tabIds.includes(t.id));
-
   if (targetTabs.length === 0) return;
 
   const tabData = targetTabs.map((tab) => ({
@@ -336,14 +323,14 @@ async function archiveSelectedTabs(tabIds) {
     lastActive: tabLastActive.get(tab.id) || Date.now(),
   }));
 
-  let archiveEntry;
+  let entry;
   if (await isPro()) {
-    archiveEntry = await summarizeAndArchiveTabs(tabData);
+    entry = await summarizeAndArchiveTabs(tabData);
   } else {
-    archiveEntry = createFreeArchiveEntry(tabData);
+    entry = createFreeArchiveEntry(tabData);
   }
-  archiveEntry.source = 'tab';
-  await saveArchivedTabs(archiveEntry);
+  entry.source = 'tab';
+  await saveArchivedTabs(entry);
   await chrome.tabs.remove(tabIds);
   tabIds.forEach((id) => tabLastActive.delete(id));
   await updateBadge();

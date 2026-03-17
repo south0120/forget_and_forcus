@@ -1,66 +1,51 @@
 // =============================================================================
-// Storage & Markdown Export Module
+// Storage & Markdown Export — 忘却録
 // =============================================================================
 
-/**
- * Save an archive entry to local storage.
- */
 export async function saveArchivedTabs(archiveEntry) {
   const { archives = [] } = await chrome.storage.local.get('archives');
   archives.unshift(archiveEntry);
-
-  // Keep max 500 entries to stay within storage limits
-  if (archives.length > 500) {
-    archives.length = 500;
-  }
-
+  if (archives.length > 500) archives.length = 500;
   await chrome.storage.local.set({ archives });
 }
 
-/**
- * Get all archived entries.
- */
 export async function getArchives() {
   const { archives = [] } = await chrome.storage.local.get('archives');
   return archives;
 }
 
-/**
- * Delete a specific archive entry by ID.
- */
 export async function deleteArchive(id) {
   const { archives = [] } = await chrome.storage.local.get('archives');
-  const filtered = archives.filter((a) => a.id !== id);
-  await chrome.storage.local.set({ archives: filtered });
+  await chrome.storage.local.set({ archives: archives.filter((a) => a.id !== id) });
 }
 
-/**
- * Clear all archives.
- */
 export async function clearAllArchives() {
   await chrome.storage.local.set({ archives: [] });
 }
 
 // =============================================================================
-// Markdown Export
+// Markdown — Oblivion Log
 // =============================================================================
 
-/**
- * Convert a single archive entry to Markdown.
- */
 function archiveToMarkdown(entry) {
   const date = new Date(entry.archivedAt).toLocaleString('ja-JP');
-  let md = `## ${entry.category} — ${date}\n\n`;
-  md += `> ${entry.summary}\n\n`;
+  const source = entry.source === 'bookmark' ? 'Bookmark' : 'Tab';
+  const hasSummary = entry.tier !== 'free' && entry.summary;
 
-  md += `### タブ一覧\n\n`;
+  let md = `## [${source}] ${entry.category || 'Uncategorized'} — ${date}\n\n`;
+
+  if (hasSummary) {
+    md += `> ${entry.summary}\n\n`;
+  }
+
   for (const tab of entry.tabs) {
-    md += `- **[${tab.title}](${tab.url})**\n`;
-    md += `  ${tab.oneLiner}\n`;
+    md += `- [${tab.title}](${tab.url})`;
+    if (tab.oneLiner) md += ` — ${tab.oneLiner}`;
+    md += `\n`;
   }
 
   if (entry.actionItems && entry.actionItems.length > 0) {
-    md += `\n### アクションアイテム\n\n`;
+    md += `\n**Next:**\n`;
     for (const item of entry.actionItems) {
       md += `- [ ] ${item}\n`;
     }
@@ -69,12 +54,9 @@ function archiveToMarkdown(entry) {
   return md;
 }
 
-/**
- * Export all archives (or a subset) as a Markdown string.
- * Designed for Obsidian-compatible output.
- */
 export function exportToMarkdown(archives) {
-  let md = `# Forget & Focus — 忘却録\n\n`;
+  let md = `# Forget & Focus — Oblivion Log\n\n`;
+  md += `> "明日に回すな。今日を生きろ。"\n`;
   md += `> Generated: ${new Date().toLocaleString('ja-JP')}\n\n`;
   md += `---\n\n`;
 
@@ -86,9 +68,6 @@ export function exportToMarkdown(archives) {
   return md;
 }
 
-/**
- * Export a weekly summary (last 7 days) as Markdown.
- */
 export function exportWeeklySummary(archives) {
   const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recent = archives.filter(
@@ -96,17 +75,13 @@ export function exportWeeklySummary(archives) {
   );
 
   if (recent.length === 0) {
-    return '# 今週の忘却録\n\n今週はまだアーカイブがありません。\n';
+    return '# Oblivion Report\n\n> You let go of nothing this week. Are you even trying?\n';
   }
 
   const totalTabs = recent.reduce((sum, a) => sum + a.tabs.length, 0);
-  const categories = [...new Set(recent.map((a) => a.category))];
 
-  let md = `# 今週の忘却録\n\n`;
-  md += `- **期間:** 直近7日間\n`;
-  md += `- **アーカイブ数:** ${recent.length}件\n`;
-  md += `- **タブ合計:** ${totalTabs}個\n`;
-  md += `- **カテゴリ:** ${categories.join(', ')}\n\n`;
+  let md = `# Oblivion Report — This Week\n\n`;
+  md += `> ${totalTabs} things forgotten. ${recent.length} sessions of letting go.\n\n`;
   md += `---\n\n`;
 
   for (const entry of recent) {
@@ -117,16 +92,12 @@ export function exportWeeklySummary(archives) {
   return md;
 }
 
-/**
- * Trigger a file download of the Markdown content.
- * (Used from popup / options page context)
- */
 export function downloadMarkdown(markdownContent, filename) {
   const blob = new Blob([markdownContent], { type: 'text/markdown;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename || `forget-and-focus-${Date.now()}.md`;
+  a.download = filename || `oblivion-${Date.now()}.md`;
   a.click();
   URL.revokeObjectURL(url);
 }

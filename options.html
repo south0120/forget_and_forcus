@@ -5,160 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles/common.css">
   <link rel="stylesheet" href="styles/options.css">
-  <title>Forget & Focus — Settings</title>
+  <title>Forget & Focus — Rules</title>
 </head>
 <body>
   <div class="container">
+    <!-- Manifesto -->
     <header class="header">
       <h1 data-i18n="appName">Forget & Focus</h1>
-      <p class="tagline" data-i18n="settings">設定</p>
+      <p class="manifesto" id="manifesto" data-i18n="manifesto">
+        開いたまま放置されたタブは、先送りされた決断だ。
+        このツールは、お前の代わりに決断する。
+      </p>
     </header>
 
-    <!-- Language Settings -->
-    <section class="card mb-12">
-      <h2 data-i18n="languageTitle">言語 / Language</h2>
-      <div class="form-group mt-8">
-        <label for="locale-select" data-i18n="languageLabel">表示言語</label>
-        <select id="locale-select">
-          <option value="ja">日本語</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-    </section>
+    <!-- The Rules -->
+    <section class="card mb-16">
+      <h2 data-i18n="settingsTitle">ルール</h2>
+      <p class="rule-explain" data-i18n="ruleExplain">
+        このツールにカスタマイズはほとんどない。それが設計思想だ。
+      </p>
 
-    <!-- Subscription / Stripe -->
-    <section class="card mb-12">
-      <h2 data-i18n="subscriptionTitle">サブスクリプション</h2>
-      <div id="subscription-status" class="mt-8">
-        <p class="text-secondary" data-i18n="freePlan">Free プラン</p>
-      </div>
-
-      <!-- Feature comparison -->
-      <div class="tier-comparison mt-12">
-        <div class="tier-col tier-free-col">
-          <h3 data-i18n="freeFeatures">Free版の機能:</h3>
-          <ul>
-            <li data-i18n="freeFeature1">タブの自動アーカイブ（URL・タイトル保存）</li>
-            <li data-i18n="freeFeature2">ブックマークのアーカイブ</li>
-            <li data-i18n="freeFeature3">Markdown形式でのエクスポート</li>
-          </ul>
-        </div>
-        <div class="tier-col tier-pro-col">
-          <h3 data-i18n="proFeatures">Pro版の追加機能:</h3>
-          <ul>
-            <li data-i18n="proFeature1">AI忘却メモ（タブの要約・カテゴリ分類）</li>
-            <li data-i18n="proFeature2">アクションアイテムの自動抽出</li>
-            <li data-i18n="proFeature3">BYOKモード（自分のAPIキーで利用可）</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="mt-12">
-        <button id="btn-subscribe" class="btn-primary" data-i18n="upgradeBtn">Pro版にアップグレード ($5/月)</button>
-      </div>
-    </section>
-
-    <!-- AI Provider Settings (Pro only) -->
-    <section id="ai-section" class="card mb-12">
-      <h2 data-i18n="aiSettings">AI設定（Pro版限定）</h2>
-      <div id="ai-locked-notice" class="pro-locked-notice mt-8 hidden">
-        <p class="text-secondary" data-i18n="aiProOnly">AI忘却メモ機能を利用するにはPro版へのアップグレードが必要です。</p>
-      </div>
-      <div id="ai-fields">
-        <div class="form-group mt-8">
-          <label for="ai-provider" data-i18n="aiProvider">AIプロバイダ</label>
-          <select id="ai-provider">
-            <option value="gemini">Google Gemini</option>
-            <option value="openai">OpenAI</option>
-            <option value="claude">Anthropic Claude</option>
-          </select>
-        </div>
-        <div class="form-group mt-8">
-          <label for="ai-model" data-i18n="aiModelLabel">モデル（空欄でデフォルト）</label>
-          <input type="text" id="ai-model" data-i18n-placeholder="aiModelPlaceholder" placeholder="例: gemini-1.5-flash">
-        </div>
-        <div class="form-group mt-8">
-          <label for="api-key" data-i18n="apiKeyLabel">APIキー（BYOK）</label>
-          <input type="password" id="api-key" data-i18n-placeholder="apiKeyPlaceholder" placeholder="sk-... / AIza...">
-          <p class="text-secondary mt-8" data-i18n="apiKeyNote">キーはローカルに保存され、外部には送信されません。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Auto Archive Settings -->
-    <section class="card mb-12">
-      <h2 data-i18n="autoArchiveTitle">自動アーカイブ</h2>
-      <div class="form-group mt-8">
-        <label class="toggle-label">
+      <div class="rule-item mt-16">
+        <label class="rule-toggle">
           <input type="checkbox" id="auto-archive">
-          <span data-i18n="autoArchiveLabel">放置タブの自動アーカイブを有効にする</span>
+          <span class="rule-name" data-i18n="ruleAutoOn">自動忘却</span>
         </label>
-        <p class="text-secondary mt-8" data-i18n="autoArchiveDesc">
-          しきい値時間以上放置されたタブを定期的にチェックし、自動でアーカイブします。
+        <p class="rule-desc" data-i18n="ruleAutoOnDesc">
+          ONにすると、24時間放置されたタブは自動で消える。容赦なく。
         </p>
       </div>
 
-      <!-- Idle Threshold -->
-      <div class="form-group mt-12">
-        <label for="idle-threshold" data-i18n="idleThreshold">アーカイブまでの放置時間</label>
-        <select id="idle-threshold">
-          <option value="15">15分</option>
-          <option value="30">30分</option>
-          <option value="60">1時間</option>
-          <option value="120">2時間</option>
-          <option value="240">4時間</option>
-          <option value="480">8時間</option>
-          <option value="1440">24時間</option>
-        </select>
-      </div>
-
-      <!-- Bookmark Archiving -->
-      <div class="form-group mt-12">
-        <h3 data-i18n="bookmarkArchive" class="subsection-title">ブックマークの自動アーカイブ</h3>
-        <label class="toggle-label mt-8">
+      <div class="rule-item mt-16">
+        <label class="rule-toggle">
           <input type="checkbox" id="bookmark-archive">
-          <span data-i18n="bookmarkArchiveLabel">一定期間アクセスしていないブックマークもアーカイブ対象にする</span>
+          <span class="rule-name" data-i18n="ruleBookmark">ブックマークも対象にする</span>
         </label>
-      </div>
-      <div class="form-group mt-8">
-        <label for="bookmark-threshold" data-i18n="bookmarkThreshold">ブックマーク放置期間</label>
-        <select id="bookmark-threshold">
-          <option value="7">7日</option>
-          <option value="14">14日</option>
-          <option value="30">30日</option>
-          <option value="60">60日</option>
-          <option value="90">90日</option>
-        </select>
+        <p class="rule-desc" data-i18n="ruleBookmarkDesc">
+          30日間開いていないブックマークは、もう必要ない。
+        </p>
       </div>
     </section>
 
-    <!-- Whitelist -->
-    <section class="card mb-12">
-      <h2 data-i18n="whitelistTitle">ホワイトリスト（忘却しないサイト）</h2>
-      <p class="text-secondary mb-8" data-i18n="whitelistDesc">
-        ドメイン名やURLプレフィクスを指定してください。固定タブは自動的に除外されます。
+    <!-- Plan -->
+    <section class="card mb-16">
+      <h2 data-i18n="subTitle">プラン</h2>
+
+      <div class="plan-row mt-12">
+        <div class="plan-card plan-free-card">
+          <div class="plan-name" data-i18n="subFree">Free — 忘却のみ</div>
+          <p class="plan-desc" data-i18n="subFreeDesc">
+            タブとブックマークを強制的に忘却する。記録はURLとタイトルのみ。
+          </p>
+        </div>
+        <div class="plan-card plan-pro-card">
+          <div class="plan-name" data-i18n="subPro">Pro — 忘却 + AI記憶</div>
+          <p class="plan-desc" data-i18n="subProDesc">
+            AIが忘れたタブに意味を与え、知識として保存する。
+          </p>
+        </div>
+      </div>
+
+      <div id="subscription-status" class="mt-12"></div>
+      <button id="btn-subscribe" class="btn-awaken mt-8" data-i18n="subUpgrade">
+        Proに覚醒する ($5/月)
+      </button>
+    </section>
+
+    <!-- AI Settings (Pro only) -->
+    <section id="ai-section" class="card mb-16">
+      <h2 data-i18n="aiTitle">忘却メモ（Pro版）</h2>
+      <p class="ai-philosophy" data-i18n="aiDesc">
+        AIが忘れたタブを要約し、意味を残す。タブは消えても、知識は残る。
       </p>
-      <div class="whitelist-input mt-8">
-        <input type="text" id="whitelist-input" data-i18n-placeholder="whitelistPlaceholder" placeholder="例: github.com">
-        <button id="btn-add-whitelist" class="btn-primary btn-sm" data-i18n="whitelistAdd">追加</button>
+      <div id="ai-locked-notice" class="locked-notice mt-12 hidden">
+        <p data-i18n="aiLocked">この機能はPro版でのみ利用可能。</p>
       </div>
-      <ul id="whitelist-items" class="whitelist-list mt-8"></ul>
+      <div id="ai-fields" class="mt-12">
+        <div class="form-group">
+          <label for="ai-provider" data-i18n="aiProvider">AI</label>
+          <select id="ai-provider">
+            <option value="gemini">Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="claude">Claude</option>
+          </select>
+        </div>
+        <div class="form-group mt-8">
+          <label for="api-key" data-i18n="apiKeyLabel">APIキー</label>
+          <input type="password" id="api-key" data-i18n-placeholder="apiKeyPlaceholder" placeholder="キーを入力">
+          <p class="subtle-note" data-i18n="apiKeyNote">ローカル保存。外部送信なし。</p>
+        </div>
+      </div>
     </section>
 
-    <!-- Data Management -->
-    <section class="card mb-12">
-      <h2 data-i18n="dataTitle">データ管理</h2>
-      <div class="button-group mt-8">
-        <button id="btn-export-all" class="btn-secondary" data-i18n="exportAll">全データをMarkdownで出力</button>
-        <button id="btn-export-weekly" class="btn-secondary" data-i18n="exportWeekly">今週のレポート出力</button>
-        <button id="btn-clear-all" class="btn-danger" data-i18n="clearAll">全データを削除</button>
+    <!-- Language — one of the few choices you get -->
+    <section class="card mb-16">
+      <h2 data-i18n="langTitle">言語 / Language</h2>
+      <select id="locale-select" class="mt-8">
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+    </section>
+
+    <!-- Data -->
+    <section class="card mb-16">
+      <h2 data-i18n="dataTitle">データ</h2>
+      <div class="data-actions mt-8">
+        <button id="btn-export-all" class="btn-ghost" data-i18n="exportAll">全忘却録をMarkdownで出力</button>
+        <button id="btn-export-weekly" class="btn-ghost" data-i18n="exportWeekly">今週の忘却レポート</button>
+        <button id="btn-clear-all" class="btn-destroy" data-i18n="clearAll">全記録を抹消</button>
       </div>
     </section>
 
-    <!-- Save -->
+    <!-- Apply -->
     <div class="save-bar">
-      <span id="save-status" class="text-secondary"></span>
-      <button id="btn-save" class="btn-primary" data-i18n="save">保存</button>
+      <span id="save-status"></span>
+      <button id="btn-save" class="btn-apply" data-i18n="save">適用</button>
     </div>
   </div>
 

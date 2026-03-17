@@ -1,5 +1,6 @@
 /* =============================================================================
-   Options Page Styles
+   Options — ルール
+   Sparse. Opinionated. Almost nothing to configure.
    ============================================================================= */
 
 body {
@@ -7,34 +8,193 @@ body {
 }
 
 .container {
-  max-width: 640px;
+  max-width: 560px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 40px 24px;
 }
+
+/* =============================================================================
+   Header — Manifesto
+   ============================================================================= */
 
 .header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
-.tagline {
+.manifesto {
   font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 4px;
+  color: var(--text-dim);
+  margin-top: 12px;
+  line-height: 1.8;
+  font-style: italic;
 }
 
-.card h2 {
-  font-size: 15px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 8px;
+/* =============================================================================
+   Rules — The few toggles you get
+   ============================================================================= */
+
+.rule-explain {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  white-space: pre-line;
 }
+
+.rule-item {
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.rule-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.rule-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-dim);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.rule-toggle input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.rule-toggle input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.rule-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rule-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  margin-left: 28px;
+  line-height: 1.6;
+}
+
+/* =============================================================================
+   Plan comparison
+   ============================================================================= */
+
+.plan-row {
+  display: flex;
+  gap: 12px;
+}
+
+.plan-card {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.plan-name {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.plan-desc {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.plan-free-card {
+  background: var(--bg);
+}
+
+.plan-free-card .plan-name {
+  color: var(--text-dim);
+}
+
+.plan-pro-card {
+  background: rgba(245, 158, 11, 0.05);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.plan-pro-card .plan-name {
+  color: var(--pro-gold);
+}
+
+.status-free {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.status-pro {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pro-gold);
+}
+
+/* =============================================================================
+   AI Section
+   ============================================================================= */
+
+.ai-philosophy {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.ai-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.locked-notice {
+  padding: 10px 14px;
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: var(--radius);
+}
+
+.locked-notice p {
+  font-size: 11px;
+  color: var(--accent);
+}
+
+/* =============================================================================
+   Forms
+   ============================================================================= */
 
 .form-group {
   margin-bottom: 4px;
@@ -42,73 +202,34 @@ body {
 
 .form-group label {
   display: block;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  color: var(--text);
-}
-
-/* Toggle */
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.toggle-label input[type="checkbox"] {
-  accent-color: var(--primary);
-  width: 16px;
-  height: 16px;
-}
-
-/* Whitelist */
-.whitelist-input {
-  display: flex;
-  gap: 8px;
-}
-
-.whitelist-input input {
-  flex: 1;
-}
-
-.whitelist-list {
-  list-style: none;
-}
-
-.whitelist-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-
-.whitelist-list li:last-child {
-  border-bottom: none;
-}
-
-.whitelist-list .btn-remove {
-  background: none;
-  color: var(--danger);
-  padding: 2px 6px;
   font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
 }
 
-.whitelist-list .btn-remove:hover {
-  background: #FEE2E2;
-  border-radius: 4px;
+.subtle-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
 }
 
-/* Button group */
-.button-group {
+/* =============================================================================
+   Data actions
+   ============================================================================= */
+
+.data-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-/* Save bar */
+/* =============================================================================
+   Save bar
+   ============================================================================= */
+
 .save-bar {
   position: sticky;
   bottom: 0;
@@ -119,80 +240,28 @@ body {
   padding: 16px 0;
   background: var(--bg);
   border-top: 1px solid var(--border);
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
-/* Tier comparison */
-.tier-comparison {
-  display: flex;
-  gap: 16px;
-}
-
-.tier-col {
-  flex: 1;
-  padding: 12px;
-  border-radius: var(--radius);
-}
-
-.tier-col h3 {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.tier-col ul {
-  list-style: none;
-  padding: 0;
-}
-
-.tier-col ul li {
+.saved-flash {
   font-size: 12px;
-  padding: 3px 0;
-  padding-left: 16px;
-  position: relative;
-}
-
-.tier-col ul li::before {
-  content: '\2713';
-  position: absolute;
-  left: 0;
   color: var(--success);
-  font-weight: 700;
-}
-
-.tier-free-col {
-  background: #F9FAFB;
-  border: 1px solid var(--border);
-}
-
-.tier-pro-col {
-  background: #FFFBEB;
-  border: 1px solid #FDE68A;
-}
-
-/* AI disabled overlay */
-.ai-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* Pro locked notice */
-.pro-locked-notice {
-  padding: 10px 12px;
-  background: #FFF7ED;
-  border: 1px solid #FED7AA;
-  border-radius: var(--radius);
-  color: #92400E;
-}
-
-.pro-locked-notice p {
-  font-size: 12px;
-  color: #92400E;
-}
-
-/* Subsection title */
-.subsection-title {
-  font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+}
+
+/* =============================================================================
+   Scrollbar
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
 }

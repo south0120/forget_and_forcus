@@ -1,22 +1,27 @@
 /* =============================================================================
-   Forget & Focus — Common Styles
+   Forget & Focus — 「今日を生きろ」
+   Dark, Bold, Typographic. No decoration. Just conviction.
    ============================================================================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
+
 :root {
-  --primary: #6C63FF;
-  --primary-dark: #5A52D5;
-  --primary-light: #8B85FF;
-  --bg: #FAFAFA;
-  --bg-card: #FFFFFF;
-  --text: #2D2D2D;
-  --text-secondary: #6B7280;
-  --border: #E5E7EB;
-  --danger: #EF4444;
-  --danger-dark: #DC2626;
-  --success: #10B981;
-  --radius: 8px;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-hover: #1A1A1A;
+  --text: #E8E8E8;
+  --text-dim: #6B6B6B;
+  --text-muted: #3D3D3D;
+  --accent: #DC2626;
+  --accent-glow: #EF4444;
+  --accent-dim: #991B1B;
+  --pro-gold: #F59E0B;
+  --pro-glow: #FBBF24;
+  --border: #222222;
+  --success: #22C55E;
+  --radius: 6px;
+  --font-ja: 'Noto Sans JP', sans-serif;
+  --font-en: 'Inter', sans-serif;
 }
 
 * {
@@ -26,130 +31,170 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
+  font-family: var(--font-en), var(--font-ja);
+  font-size: 13px;
   color: var(--text);
   background: var(--bg);
-  line-height: 1.5;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* =============================================================================
+   Buttons — Decisive, not decorative
+   ============================================================================= */
 
 button {
   cursor: pointer;
   border: none;
   border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   padding: 8px 16px;
-  transition: background 0.15s, transform 0.1s;
+  transition: all 0.15s ease;
+  font-family: inherit;
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
+button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.btn-primary:hover {
-  background: var(--primary-dark);
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
 }
 
-.btn-secondary {
-  background: var(--border);
+.btn-ghost:hover:not(:disabled) {
   color: var(--text);
+  border-color: var(--text-dim);
 }
 
-.btn-secondary:hover {
-  background: #D1D5DB;
+.btn-destroy {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
 }
 
-.btn-danger {
-  background: var(--danger);
+.btn-destroy:hover:not(:disabled) {
+  background: var(--accent-dim);
   color: #fff;
 }
 
-.btn-danger:hover {
-  background: var(--danger-dark);
+.btn-apply {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 800;
+  letter-spacing: 0.05em;
 }
 
-.btn-sm {
-  padding: 4px 10px;
-  font-size: 12px;
+.btn-apply:hover:not(:disabled) {
+  background: #fff;
 }
+
+.btn-awaken {
+  background: linear-gradient(135deg, var(--pro-gold), #EF4444);
+  color: #000;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 10px 20px;
+}
+
+.btn-awaken:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* =============================================================================
+   Form elements — Minimal
+   ============================================================================= */
 
 input[type="text"],
-input[type="url"],
 input[type="password"],
 select {
   width: 100%;
   padding: 8px 12px;
+  background: var(--bg);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 13px;
+  font-family: inherit;
   outline: none;
-  transition: border 0.15s;
+  transition: border-color 0.15s;
 }
 
 input:focus,
 select:focus {
-  border-color: var(--primary);
+  border-color: var(--text-dim);
 }
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+select option {
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+/* =============================================================================
+   Cards
+   ============================================================================= */
 
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow);
+  padding: 20px;
 }
+
+.card h2 {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+/* =============================================================================
+   Badges
+   ============================================================================= */
 
 .badge {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--primary-light);
-  color: #fff;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-.text-secondary {
-  color: var(--text-secondary);
-  font-size: 12px;
+.ai-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  background: var(--pro-gold);
+  color: #000;
+  letter-spacing: 0.08em;
 }
 
+/* =============================================================================
+   Utility
+   ============================================================================= */
+
+.hidden { display: none !important; }
 .mt-8 { margin-top: 8px; }
 .mt-12 { margin-top: 12px; }
 .mt-16 { margin-top: 16px; }
 .mb-8 { margin-bottom: 8px; }
 .mb-12 { margin-bottom: 12px; }
-
-.hidden { display: none !important; }
-
-/* Pro badge */
-.badge-pro {
-  background: linear-gradient(135deg, #F59E0B, #EF4444);
-  color: #fff;
-  font-size: 10px;
-  padding: 2px 6px;
-}
-
-.badge-pro-sm {
-  display: inline-block;
-  padding: 1px 5px;
-  border-radius: 8px;
-  font-size: 9px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #F59E0B, #EF4444);
-  color: #fff;
-  vertical-align: middle;
-  margin-left: 4px;
-}
-
-/* Source icon */
-.source-icon {
-  font-size: 12px;
-  margin-right: 2px;
-}
+.mb-16 { margin-bottom: 16px; }

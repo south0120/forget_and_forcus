@@ -1,217 +1,199 @@
 // =============================================================================
-// i18n — Multi-language Support (ja / en)
+// i18n — 「今日を生きろ」コンセプト
 // =============================================================================
 
 const MESSAGES = {
   ja: {
-    // Header
+    // Core philosophy
     appName: 'Forget & Focus',
-    tagline: 'Forget Tabs, Focus on Tasks.',
-    settings: '設定',
+    tagline: '明日に回すな。今日を生きろ。',
+    manifesto: '開いたまま放置されたタブは、先送りされた決断だ。\nこのツールは、お前の代わりに決断する。',
 
-    // Popup
-    idleTabs: '放置中のタブ',
-    refresh: '更新',
-    loading: '読み込み中...',
-    noIdleTabs: '放置中のタブはありません',
-    archiveSelected: '選択したタブを忘却する',
-    archiveAll: 'すべて忘却する',
-    processing: '処理中...',
-    recentArchives: '最近の忘却録',
-    exportMd: 'MD出力',
-    noArchives: 'アーカイブはまだありません',
-    minutesIdle: '{min}分放置',
-    settingsLink: '設定',
+    // Popup — The Reckoning
+    countdownTitle: '残り時間',
+    tabsDoomed: '個のタブが忘却される',
+    noTabs: 'タブはない。お前は今、集中している。',
+    forgetNow: '今すぐ忘れろ',
+    forgetAll: '全部捨てろ',
+    forgetting: '忘却中...',
+    forgotten: '忘却した。前を向け。',
 
-    // Popup — Pro features
+    // Tab states
+    doomingIn: 'あと{h}時間{m}分',
+    doomingSoon: 'まもなく忘却',
+    doomed: '忘却済み',
+
+    // Archives — 忘却録
+    archiveTitle: '忘却録',
+    archiveEmpty: 'まだ何も手放していない。',
+    archiveExport: '記録を持ち出す',
+
+    // Pro upsell
     proLabel: 'Pro',
-    aiSummaryLocked: 'AI忘却メモはPro版限定機能です',
-    upgradeForSummary: 'アップグレードしてAI要約を有効化',
+    proBannerFree: '忘れた記憶にAIが意味を与える。',
+    proUnlock: 'Pro版で忘却メモを解放する',
 
-    // Options — AI
-    aiSettings: 'AI設定（Pro版限定）',
-    aiProvider: 'AIプロバイダ',
-    aiModelLabel: 'モデル（空欄でデフォルト）',
-    aiModelPlaceholder: '例: gemini-1.5-flash',
-    apiKeyLabel: 'APIキー（BYOK）',
-    apiKeyPlaceholder: 'sk-... / AIza...',
-    apiKeyNote: 'キーはローカルに保存され、外部には送信されません。',
-    aiProOnly: 'AI忘却メモ機能を利用するにはPro版へのアップグレードが必要です。',
+    // Settings — minimal
+    settingsTitle: 'ルール',
+    ruleExplain: 'このツールにカスタマイズはほとんどない。\nそれが設計思想だ。',
+    ruleAutoOn: '自動忘却',
+    ruleAutoOnDesc: 'ONにすると、24時間放置されたタブは自動で消える。容赦なく。',
+    ruleBookmark: 'ブックマークも対象にする',
+    ruleBookmarkDesc: '30日間開いていないブックマークは、もう必要ない。',
 
-    // Options — Auto archive
-    autoArchiveTitle: '自動アーカイブ',
-    autoArchiveLabel: '放置タブの自動アーカイブを有効にする',
-    autoArchiveDesc: 'しきい値時間以上放置されたタブを定期的にチェックし、自動でアーカイブします。',
-    idleThreshold: 'アーカイブまでの放置時間',
-    thresholdOption: '{min}分',
-    thresholdHour: '{h}時間',
-    bookmarkArchive: 'ブックマークの自動アーカイブ',
-    bookmarkArchiveLabel: '一定期間アクセスしていないブックマークもアーカイブ対象にする',
-    bookmarkThreshold: 'ブックマーク放置期間',
-    bookmarkDays: '{d}日',
+    // AI (Pro)
+    aiTitle: '忘却メモ（Pro版）',
+    aiDesc: 'AIが忘れたタブを要約し、意味を残す。タブは消えても、知識は残る。',
+    aiLocked: 'この機能はPro版でのみ利用可能。',
+    aiProvider: 'AI',
+    apiKeyLabel: 'APIキー',
+    apiKeyPlaceholder: 'キーを入力',
+    apiKeyNote: 'ローカル保存。外部送信なし。',
 
-    // Options — Whitelist
-    whitelistTitle: 'ホワイトリスト（忘却しないサイト）',
-    whitelistDesc: 'ドメイン名やURLプレフィクスを指定してください。固定タブは自動的に除外されます。',
-    whitelistPlaceholder: '例: github.com',
-    whitelistAdd: '追加',
-    whitelistEmpty: '登録なし',
-    whitelistRemove: '削除',
+    // Subscription
+    subTitle: 'プラン',
+    subFree: 'Free — 忘却のみ',
+    subPro: 'Pro — 忘却 + AI記憶',
+    subUpgrade: 'Proに覚醒する ($5/月)',
+    subManage: 'プランを管理',
+    subFreeDesc: 'タブとブックマークを強制的に忘却する。記録はURLとタイトルのみ。',
+    subProDesc: 'AIが忘れたタブに意味を与え、知識として保存する。',
 
-    // Options — Subscription
-    subscriptionTitle: 'サブスクリプション',
-    freePlan: 'Free プラン',
-    proPlan: 'Pro プラン（有効）',
-    upgradeBtn: 'Pro版にアップグレード ($5/月)',
-    manageBtn: 'プランを管理',
-    proDesc: 'Pro版ではAI忘却メモ機能が使えます。AIがタブを要約・カテゴリ分けし、アクションアイテムを提案します。',
-    freeFeatures: 'Free版の機能:',
-    freeFeature1: 'タブの自動アーカイブ（URL・タイトル保存）',
-    freeFeature2: 'ブックマークのアーカイブ',
-    freeFeature3: 'Markdown形式でのエクスポート',
-    proFeatures: 'Pro版の追加機能:',
-    proFeature1: 'AI忘却メモ（タブの要約・カテゴリ分類）',
-    proFeature2: 'アクションアイテムの自動抽出',
-    proFeature3: 'BYOKモード（自分のAPIキーで利用可）',
+    // Language
+    langTitle: '言語 / Language',
 
-    // Options — Language
-    languageTitle: '言語 / Language',
-    languageLabel: '表示言語',
+    // Data
+    dataTitle: 'データ',
+    exportAll: '全忘却録をMarkdownで出力',
+    exportWeekly: '今週の忘却レポート',
+    clearAll: '全記録を抹消',
+    clearConfirm: '全ての忘却録を完全に消去する。\n本当にいいのか？',
+    clearDone: '全記録を抹消した。',
+    noExportData: '出力する記録がない。',
 
-    // Options — Data
-    dataTitle: 'データ管理',
-    exportAll: '全データをMarkdownで出力',
-    exportWeekly: '今週のレポート出力',
-    clearAll: '全データを削除',
-    noExportData: 'エクスポートするデータがありません。',
-    clearConfirm: 'すべてのアーカイブデータを削除しますか？この操作は取り消せません。',
-    clearDone: 'データを削除しました。',
+    // Save
+    save: '適用',
+    saved: '適用した',
 
-    // Options — Save
-    save: '保存',
-    saved: '保存しました',
+    // Quotes — random philosophical nudges
+    quotes: [
+      '開きっぱなしのタブは、先送りされた人生だ。',
+      '情報を溜めることは、思考を止めることだ。',
+      '忘れることを恐れるな。忘れた分だけ、今に集中できる。',
+      '100個のタブを持つ者は、何一つ読んでいない。',
+      'ブックマークは墓場だ。今日読め、さもなくば忘れろ。',
+      'タブを閉じることは、決断することだ。',
+      '明日やろうは、永遠にやらないの別名だ。',
+      '集中とは、捨てる勇気のことだ。',
+    ],
   },
 
   en: {
     appName: 'Forget & Focus',
-    tagline: 'Forget Tabs, Focus on Tasks.',
-    settings: 'Settings',
+    tagline: "Don't push it to tomorrow. Live today.",
+    manifesto: "Tabs left open are decisions left unmade.\nThis tool makes them for you.",
 
-    idleTabs: 'Idle Tabs',
-    refresh: 'Refresh',
-    loading: 'Loading...',
-    noIdleTabs: 'No idle tabs found',
-    archiveSelected: 'Archive Selected',
-    archiveAll: 'Archive All',
-    processing: 'Processing...',
-    recentArchives: 'Recent Archives',
-    exportMd: 'Export MD',
-    noArchives: 'No archives yet',
-    minutesIdle: '{min}m idle',
-    settingsLink: 'Settings',
+    countdownTitle: 'Time Left',
+    tabsDoomed: 'tab(s) will be forgotten',
+    noTabs: 'No tabs. You are focused.',
+    forgetNow: 'Forget Now',
+    forgetAll: 'Forget Everything',
+    forgetting: 'Forgetting...',
+    forgotten: 'Forgotten. Move on.',
+
+    doomingIn: '{h}h {m}m left',
+    doomingSoon: 'Forgetting soon',
+    doomed: 'Forgotten',
+
+    archiveTitle: 'Oblivion Log',
+    archiveEmpty: "You haven't let go of anything yet.",
+    archiveExport: 'Export Log',
 
     proLabel: 'Pro',
-    aiSummaryLocked: 'AI Notes is a Pro feature',
-    upgradeForSummary: 'Upgrade to enable AI summaries',
+    proBannerFree: 'AI gives meaning to what you forget.',
+    proUnlock: 'Unlock AI Notes with Pro',
 
-    aiSettings: 'AI Settings (Pro Only)',
-    aiProvider: 'AI Provider',
-    aiModelLabel: 'Model (blank for default)',
-    aiModelPlaceholder: 'e.g. gemini-1.5-flash',
-    apiKeyLabel: 'API Key (BYOK)',
-    apiKeyPlaceholder: 'sk-... / AIza...',
-    apiKeyNote: 'Keys are stored locally and never sent externally.',
-    aiProOnly: 'Upgrade to Pro to use AI Notes feature.',
+    settingsTitle: 'Rules',
+    ruleExplain: "There's almost nothing to customize here.\nThat's by design.",
+    ruleAutoOn: 'Auto-forget',
+    ruleAutoOnDesc: 'Turn this on, and tabs idle for 24 hours die. No mercy.',
+    ruleBookmark: 'Include bookmarks',
+    ruleBookmarkDesc: "Bookmarks untouched for 30 days? You don't need them.",
 
-    autoArchiveTitle: 'Auto Archive',
-    autoArchiveLabel: 'Enable automatic archiving of idle tabs',
-    autoArchiveDesc: 'Periodically checks for tabs idle beyond the threshold and archives them automatically.',
-    idleThreshold: 'Idle time before archive',
-    thresholdOption: '{min} min',
-    thresholdHour: '{h} hour(s)',
-    bookmarkArchive: 'Bookmark Archiving',
-    bookmarkArchiveLabel: 'Also archive bookmarks not accessed for a set period',
-    bookmarkThreshold: 'Bookmark idle period',
-    bookmarkDays: '{d} days',
+    aiTitle: 'AI Notes (Pro)',
+    aiDesc: 'AI summarizes forgotten tabs. Tabs die, knowledge lives.',
+    aiLocked: 'This feature requires Pro.',
+    aiProvider: 'AI',
+    apiKeyLabel: 'API Key',
+    apiKeyPlaceholder: 'Enter key',
+    apiKeyNote: 'Stored locally. Never sent externally.',
 
-    whitelistTitle: 'Whitelist (Never Archive)',
-    whitelistDesc: 'Specify domains or URL prefixes. Pinned tabs are always excluded.',
-    whitelistPlaceholder: 'e.g. github.com',
-    whitelistAdd: 'Add',
-    whitelistEmpty: 'No entries',
-    whitelistRemove: 'Remove',
+    subTitle: 'Plan',
+    subFree: 'Free — Oblivion only',
+    subPro: 'Pro — Oblivion + AI Memory',
+    subUpgrade: 'Awaken to Pro ($5/mo)',
+    subManage: 'Manage Plan',
+    subFreeDesc: 'Force-forgets tabs and bookmarks. Records URL and title only.',
+    subProDesc: 'AI gives meaning to forgotten tabs, preserving knowledge.',
 
-    subscriptionTitle: 'Subscription',
-    freePlan: 'Free Plan',
-    proPlan: 'Pro Plan (Active)',
-    upgradeBtn: 'Upgrade to Pro ($5/mo)',
-    manageBtn: 'Manage Plan',
-    proDesc: 'Pro unlocks AI Notes: AI-powered summaries, categorization, and action item extraction for your archived tabs.',
-    freeFeatures: 'Free features:',
-    freeFeature1: 'Auto tab archiving (URL & title saved)',
-    freeFeature2: 'Bookmark archiving',
-    freeFeature3: 'Markdown export',
-    proFeatures: 'Pro features:',
-    proFeature1: 'AI Notes (tab summarization & categorization)',
-    proFeature2: 'Automatic action item extraction',
-    proFeature3: 'BYOK mode (use your own API key)',
+    langTitle: 'Language / 言語',
 
-    languageTitle: 'Language / 言語',
-    languageLabel: 'Display language',
+    dataTitle: 'Data',
+    exportAll: 'Export all as Markdown',
+    exportWeekly: "This week's oblivion report",
+    clearAll: 'Erase everything',
+    clearConfirm: "Permanently erase all records.\nAre you sure?",
+    clearDone: 'All records erased.',
+    noExportData: 'Nothing to export.',
 
-    dataTitle: 'Data Management',
-    exportAll: 'Export All as Markdown',
-    exportWeekly: 'Export Weekly Report',
-    clearAll: 'Delete All Data',
-    noExportData: 'No data to export.',
-    clearConfirm: 'Delete all archive data? This cannot be undone.',
-    clearDone: 'Data deleted.',
+    save: 'Apply',
+    saved: 'Applied',
 
-    save: 'Save',
-    saved: 'Saved',
+    quotes: [
+      'Tabs left open are a life left on hold.',
+      'Hoarding information is the death of thought.',
+      "Don't fear forgetting. The more you forget, the more you focus.",
+      'He who has 100 tabs has read none.',
+      "Bookmarks are a graveyard. Read it today, or forget it.",
+      'Closing a tab is making a decision.',
+      '"I\'ll do it tomorrow" is another name for never.',
+      'Focus is the courage to let go.',
+    ],
   },
 };
 
-/**
- * Get the current locale from storage (defaults to 'ja').
- */
 export async function getLocale() {
   const { locale = 'ja' } = await chrome.storage.local.get('locale');
   return locale;
 }
 
-/**
- * Get translation function for the given locale.
- */
 export function t(locale, key, params = {}) {
   const msgs = MESSAGES[locale] || MESSAGES.ja;
   let text = msgs[key] || MESSAGES.ja[key] || key;
+  if (Array.isArray(text)) return text;
   for (const [k, v] of Object.entries(params)) {
     text = text.replace(`{${k}}`, v);
   }
   return text;
 }
 
-/**
- * Apply translations to all elements with data-i18n attribute.
- */
+export function getRandomQuote(locale) {
+  const quotes = t(locale, 'quotes');
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
 export function applyI18n(locale, root = document) {
   const elements = root.querySelectorAll('[data-i18n]');
   for (const el of elements) {
     const key = el.getAttribute('data-i18n');
-    el.textContent = t(locale, key);
+    const text = t(locale, key);
+    if (typeof text === 'string') el.textContent = text;
   }
 
   const placeholders = root.querySelectorAll('[data-i18n-placeholder]');
   for (const el of placeholders) {
     const key = el.getAttribute('data-i18n-placeholder');
     el.placeholder = t(locale, key);
-  }
-
-  const titles = root.querySelectorAll('[data-i18n-title]');
-  for (const el of titles) {
-    const key = el.getAttribute('data-i18n-title');
-    el.title = t(locale, key);
   }
 }
 

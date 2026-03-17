@@ -7,58 +7,55 @@
   <title>Forget & Focus</title>
 </head>
 <body>
+  <!-- Quote of the moment -->
+  <div class="quote-bar">
+    <p id="quote"></p>
+  </div>
+
   <!-- Header -->
   <header class="header">
     <h1 data-i18n="appName">Forget & Focus</h1>
-    <p class="tagline" data-i18n="tagline">Forget Tabs, Focus on Tasks.</p>
+    <p class="tagline" data-i18n="tagline">明日に回すな。今日を生きろ。</p>
   </header>
 
-  <!-- Plan indicator -->
-  <div id="plan-indicator" class="plan-indicator plan-free">
-    <span id="plan-label">Free</span>
-  </div>
-
-  <!-- Idle tabs section -->
-  <section class="section">
-    <div class="section-header">
-      <h2 data-i18n="idleTabs">放置中のタブ</h2>
-      <button id="btn-refresh" class="btn-secondary btn-sm" data-i18n="refresh">更新</button>
-    </div>
-    <div id="idle-tabs-list" class="tab-list">
-      <p class="text-secondary" data-i18n="loading">読み込み中...</p>
-    </div>
+  <!-- The Countdown — central dramatic element -->
+  <section class="doom-section">
+    <div class="doom-count" id="doom-count">0</div>
+    <div class="doom-label" id="doom-label" data-i18n="tabsDoomed">個のタブが忘却される</div>
   </section>
 
-  <!-- Actions -->
-  <section class="actions">
-    <button id="btn-archive-selected" class="btn-primary" disabled data-i18n="archiveSelected">
-      選択したタブを忘却する
-    </button>
-    <button id="btn-archive-all" class="btn-secondary" data-i18n="archiveAll">
-      すべて忘却する
+  <!-- Doomed tab list -->
+  <section class="doomed-list-section">
+    <div id="doomed-tabs" class="doomed-list"></div>
+  </section>
+
+  <!-- The Button — one big, decisive action -->
+  <section class="action-section">
+    <button id="btn-forget" class="btn-forget" disabled data-i18n="forgetAll">
+      全部捨てろ
     </button>
   </section>
 
-  <!-- AI Summary banner (Pro only) -->
+  <!-- Pro banner (Free users only) -->
   <div id="pro-banner" class="pro-banner hidden">
-    <span class="badge badge-pro" data-i18n="proLabel">Pro</span>
-    <span id="pro-banner-text" data-i18n="aiSummaryLocked">AI忘却メモはPro版限定機能です</span>
+    <span id="pro-banner-text" data-i18n="proBannerFree">忘れた記憶にAIが意味を与える。</span>
+    <a href="#" id="pro-link" data-i18n="proUnlock">Pro版で忘却メモを解放する</a>
   </div>
 
-  <!-- Recent archives -->
-  <section class="section">
+  <!-- Recent oblivion log -->
+  <section class="archive-section">
     <div class="section-header">
-      <h2 data-i18n="recentArchives">最近の忘却録</h2>
-      <button id="btn-export" class="btn-secondary btn-sm" data-i18n="exportMd">MD出力</button>
+      <h2 data-i18n="archiveTitle">忘却録</h2>
+      <button id="btn-export" class="btn-ghost" data-i18n="archiveExport">記録を持ち出す</button>
     </div>
     <div id="archives-list" class="archive-list">
-      <p class="text-secondary" data-i18n="noArchives">アーカイブはまだありません</p>
+      <p class="empty-text" data-i18n="archiveEmpty">まだ何も手放していない。</p>
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <a href="options.html" id="link-options" data-i18n="settingsLink">設定</a>
+    <a href="options.html" id="link-options" data-i18n="settingsTitle">ルール</a>
   </footer>
 
   <script src="src/popup.js" type="module"></script>
