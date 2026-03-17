@@ -10,7 +10,7 @@ import { isPro, createFreeArchiveEntry } from './tier.js';
 // No settings. No mercy. No "just 5 more minutes."
 // =============================================================================
 
-const IDLE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours. Period.
+const IDLE_THRESHOLD_MS = 30 * 60 * 1000; // ⚠️ TEST: 30 minutes (本番は 24 * 60 * 60 * 1000)
 const BOOKMARK_THRESHOLD_MS = 30 * 24 * 60 * 60 * 1000; // 30 days.
 const CHECK_ALARM_NAME = 'check-idle-tabs';
 const BOOKMARK_ALARM_NAME = 'check-idle-bookmarks';
